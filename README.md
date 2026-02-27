@@ -30,7 +30,9 @@ Add here
 How to run frontend on local:
 
 ```bash
-Add here
+Go to /frontend
+npm install
+npm run start
 ```
 
 How to run frontend on production build:
@@ -48,7 +50,7 @@ Add here
 Login to frontend by visiting:
 
 ```bash
-Add here
+http://localhost:3000/
 ```
 
 evidences: Add video evidences of your service
