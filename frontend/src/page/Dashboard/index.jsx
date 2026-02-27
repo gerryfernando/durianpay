@@ -26,8 +26,8 @@ import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [status, setStatus] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState("all");
+  const [loading, _] = useState(false);
 
   function createData(id, name, created_at, amount, status) {
     return { id, name, created_at, amount, status };
@@ -44,7 +44,7 @@ const Dashboard = () => {
   const [data, setData] = useState(rows);
 
   const filterData = [
-    { value: "", label: "All" },
+    { value: "all", label: "All" },
     { value: "success", label: "Success" },
     { value: "failed", label: "Failed" },
     { value: "processing", label: "Processing" },
@@ -54,6 +54,9 @@ const Dashboard = () => {
     try {
       const token = sessionStorage.getItem("token");
       const res = await API.get("dashboard/v1/payments", {
+        params: {
+          status: status,
+        },
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -65,11 +68,12 @@ const Dashboard = () => {
   };
   useEffect(() => {
     GetPayment();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const filteredData = useMemo(() =>
-    status === ""
+    status === "all"
       ? data
       : data.filter((row) => row.status === status, [status]),
   );
