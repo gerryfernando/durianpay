@@ -21,7 +21,7 @@ func NewPaymentRepo(db *sql.DB) *Payment {
 
 func (r *Payment) GetListPayment() (*[]entity.Payment, error) {
 	rows, err := r.db.Query(`
-	SELECT id, merchant, amount, created_at, status 
+	SELECT id, name, amount, created_at, status 
 	FROM payments
 `)
 	if err != nil {
@@ -36,7 +36,7 @@ func (r *Payment) GetListPayment() (*[]entity.Payment, error) {
 
 		if err := rows.Scan(
 			&p.ID,
-			&p.Merchant,
+			&p.Name,
 			&p.Amount,
 			&p.CreatedAt,
 			&p.Status,
@@ -50,6 +50,6 @@ func (r *Payment) GetListPayment() (*[]entity.Payment, error) {
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
-	fmt.Printf("payments: %v\n", payments)
+	fmt.Printf("payments: %v\n", &payments)
 	return &payments, nil
 }

@@ -108,13 +108,13 @@ func initDB(db *sql.DB) error {
 		return err
 	}
 	if pm == 0 {
-		if _, err := db.Exec("INSERT INTO payments(merchant, amount, status, created_at) VALUES (?, ?, ?, ?)", "BBCA", 10000, "success", time.Now()); err != nil {
+		if _, err := db.Exec("INSERT INTO payments(name, amount, status, created_at) VALUES (?, ?, ?, ?)", "BBCA", 10000, "success", time.Now()); err != nil {
 			return err
 		}
-		if _, err := db.Exec("INSERT INTO payments(merchant, amount, status, created_at) VALUES (?, ?, ?, ?)", "BRI", 14000, "processing", time.Now()); err != nil {
+		if _, err := db.Exec("INSERT INTO payments(name, amount, status, created_at) VALUES (?, ?, ?, ?)", "BRI", 14000, "processing", time.Now()); err != nil {
 			return err
 		}
-		if _, err := db.Exec("INSERT INTO payments(merchant, amount, status, created_at) VALUES (?, ?, ?, ?)", "Shopee", 104000, "failed", time.Now()); err != nil {
+		if _, err := db.Exec("INSERT INTO payments(name, amount, status, created_at) VALUES (?, ?, ?, ?)", "Shopee", 104000, "failed", time.Now()); err != nil {
 			return err
 		}
 	}

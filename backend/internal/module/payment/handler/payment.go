@@ -32,7 +32,7 @@ func (h *PaymentHandler) GetV1Payments(w http.ResponseWriter, r *http.Request) {
 		for _, p := range *payments {
 
 			id := strconv.Itoa(p.ID)
-			merchant := p.Merchant
+			merchant := p.Name
 			amount := fmt.Sprintf("%.2f", p.Amount)
 			status := p.Status
 			createdAt := p.CreatedAt

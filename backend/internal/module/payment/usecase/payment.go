@@ -23,7 +23,10 @@ func NewPaymentsUsecase(repo repository.PaymentRepository, jwtSecret []byte, ttl
 }
 
 func (a *Payments) GetPayments() (*[]entity.Payment, error) {
-	payments, _ := a.repo.GetListPayment()
+	payments, err := a.repo.GetListPayment()
+	if err != nil {
+		return nil, err
+	}
 	fmt.Printf("paymentsUsecase: %v\n", payments)
 	return payments, nil
 }
