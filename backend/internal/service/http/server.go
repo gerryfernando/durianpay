@@ -2,14 +2,17 @@ package http
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
 	"github.com/durianpay/fullstack-boilerplate/internal/openapigen"
+	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/go-chi/chi/v5"
 	oapinethttpmw "github.com/oapi-codegen/nethttp-middleware"
 )
@@ -49,13 +52,42 @@ func NewServer(apiHandler openapigen.ServerInterface, openapiYamlPath string) *S
 	})
 
 	r.Route("/", func(api chi.Router) {
+
 		api.Use(oapinethttpmw.OapiRequestValidatorWithOptions(
 			swagger,
+
 			&oapinethttpmw.Options{
+				Options: openapi3filter.Options{
+					AuthenticationFunc: func(ctx context.Context, input *openapi3filter.AuthenticationInput) error {
+
+						req := input.RequestValidationInput.Request
+						authHeader := req.Header.Get("Authorization")
+
+						if authHeader == "" {
+							return fmt.Errorf("missing authorization header")
+						}
+
+						const prefix = "Bearer "
+						if !strings.HasPrefix(authHeader, prefix) {
+							return fmt.Errorf("invalid authorization format")
+						}
+
+						token := strings.TrimPrefix(authHeader, prefix)
+
+						if token == "" {
+							return fmt.Errorf("invalid token")
+						}
+
+						// TODO: Validate JWT properly here
+
+						return nil
+					},
+				},
 				DoNotValidateServers:  true,
 				SilenceServersWarning: true,
 			},
 		))
+
 		openapigen.HandlerFromMux(apiHandler, api)
 	})
 

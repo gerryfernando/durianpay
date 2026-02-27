@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/durianpay/fullstack-boilerplate/internal/entity"
 )
@@ -14,13 +15,13 @@ type Payment struct {
 	db *sql.DB
 }
 
-func NewPaymenyRepo(db *sql.DB) *Payment {
+func NewPaymentRepo(db *sql.DB) *Payment {
 	return &Payment{db: db}
 }
 
 func (r *Payment) GetListPayment() (*[]entity.Payment, error) {
 	rows, err := r.db.Query(`
-	SELECT id, name, amount, created_at, status 
+	SELECT id, merchant, amount, created_at, status 
 	FROM payments
 `)
 	if err != nil {
@@ -35,7 +36,7 @@ func (r *Payment) GetListPayment() (*[]entity.Payment, error) {
 
 		if err := rows.Scan(
 			&p.ID,
-			&p.Name,
+			&p.Merchant,
 			&p.Amount,
 			&p.CreatedAt,
 			&p.Status,
@@ -49,6 +50,6 @@ func (r *Payment) GetListPayment() (*[]entity.Payment, error) {
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
-
+	fmt.Printf("payments: %v\n", payments)
 	return &payments, nil
 }

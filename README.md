@@ -12,13 +12,18 @@ node v24.13.1
 Install all related requirements:
 
 ```bash
-Add here
+install go
+install node
+install gcc for sqllite (in windows)
 ```
 
 How to run backend server on local:
 
 ```bash
-Add here
+cd /backend
+generate JWT SECRET
+go mod tidy
+go run main.go
 ```
 
 How to run backend server on production build:

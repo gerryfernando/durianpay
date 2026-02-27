@@ -9,7 +9,7 @@ import (
 )
 
 type PaymentUsecase interface {
-	Login(email string, password string) (string, *entity.Payment, error)
+	GetPayments() (*[]entity.Payment, error)
 }
 
 type Payments struct {
@@ -18,12 +18,12 @@ type Payments struct {
 	ttl       time.Duration
 }
 
-func PaymentsUsecase(repo repository.PaymentRepository, jwtSecret []byte, ttl time.Duration) *Payments {
+func NewPaymentsUsecase(repo repository.PaymentRepository, jwtSecret []byte, ttl time.Duration) *Payments {
 	return &Payments{repo: repo, jwtSecret: jwtSecret, ttl: ttl}
 }
 
 func (a *Payments) GetPayments() (*[]entity.Payment, error) {
 	payments, _ := a.repo.GetListPayment()
-	fmt.Println(payments)
+	fmt.Printf("paymentsUsecase: %v\n", payments)
 	return payments, nil
 }

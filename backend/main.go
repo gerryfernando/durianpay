@@ -10,6 +10,9 @@ import (
 	ah "github.com/durianpay/fullstack-boilerplate/internal/module/auth/handler"
 	ar "github.com/durianpay/fullstack-boilerplate/internal/module/auth/repository"
 	au "github.com/durianpay/fullstack-boilerplate/internal/module/auth/usecase"
+	ph "github.com/durianpay/fullstack-boilerplate/internal/module/payment/handler"
+	pr "github.com/durianpay/fullstack-boilerplate/internal/module/payment/repository"
+	pu "github.com/durianpay/fullstack-boilerplate/internal/module/payment/usecase"
 	srv "github.com/durianpay/fullstack-boilerplate/internal/service/http"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
@@ -36,13 +39,18 @@ func main() {
 	}
 
 	userRepo := ar.NewUserRepo(db)
+	paymentRepo := pr.NewPaymentRepo(db)
 
 	authUC := au.NewAuthUsecase(userRepo, config.JwtSecret, JwtExpiredDuration)
+	paymentUC := pu.NewPaymentsUsecase(paymentRepo, config.JwtSecret, JwtExpiredDuration)
 
 	authH := ah.NewAuthHandler(authUC)
 
+	paymentH := ph.NewPaymentHandler(paymentUC)
+
 	apiHandler := &api.APIHandler{
-		Auth: authH,
+		Auth:     authH,
+		Payments: paymentH,
 	}
 
 	server := srv.NewServer(apiHandler, config.OpenapiYamlLocation)
@@ -65,7 +73,7 @@ func initDB(db *sql.DB) error {
 		  id INTEGER PRIMARY KEY AUTOINCREMENT,
 		  amount REAL NOT NULL,
 		  status TEXT NOT NULL,
-		  name TEXT NOT NULL,
+		  merchant TEXT NOT NULL,
 		  created_at DATETIME NOT NULL
 		);`,
 	}
@@ -100,13 +108,13 @@ func initDB(db *sql.DB) error {
 		return err
 	}
 	if pm == 0 {
-		if _, err := db.Exec("INSERT INTO payments(name, amount, status, created_at) VALUES (?, ?, ?, ?)", "BBCA", 10000, "success", time.Now()); err != nil {
+		if _, err := db.Exec("INSERT INTO payments(merchant, amount, status, created_at) VALUES (?, ?, ?, ?)", "BBCA", 10000, "success", time.Now()); err != nil {
 			return err
 		}
-		if _, err := db.Exec("INSERT INTO payments(name, amount, status, created_at) VALUES (?, ?, ?, ?)", "BRI", 14000, "processing", time.Now()); err != nil {
+		if _, err := db.Exec("INSERT INTO payments(merchant, amount, status, created_at) VALUES (?, ?, ?, ?)", "BRI", 14000, "processing", time.Now()); err != nil {
 			return err
 		}
-		if _, err := db.Exec("INSERT INTO payments(name, amount, status, created_at) VALUES (?, ?, ?, ?)", "Shopee", 104000, "failed", time.Now()); err != nil {
+		if _, err := db.Exec("INSERT INTO payments(merchant, amount, status, created_at) VALUES (?, ?, ?, ?)", "Shopee", 104000, "failed", time.Now()); err != nil {
 			return err
 		}
 	}
