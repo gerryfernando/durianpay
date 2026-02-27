@@ -93,6 +93,24 @@ func initDB(db *sql.DB) error {
 		}
 	}
 
+	// seed PAYMENT if not exists
+	var pm int
+	paymentRow := db.QueryRow("SELECT COUNT(1) FROM payments")
+	if err := paymentRow.Scan(&pm); err != nil {
+		return err
+	}
+	if pm == 0 {
+		if _, err := db.Exec("INSERT INTO payments(name, amount, status, created_at) VALUES (?, ?, ?, ?)", "BBCA", 10000, "success", time.Now()); err != nil {
+			return err
+		}
+		if _, err := db.Exec("INSERT INTO payments(name, amount, status, created_at) VALUES (?, ?, ?, ?)", "BRI", 14000, "processing", time.Now()); err != nil {
+			return err
+		}
+		if _, err := db.Exec("INSERT INTO payments(name, amount, status, created_at) VALUES (?, ?, ?, ?)", "Shopee", 104000, "failed", time.Now()); err != nil {
+			return err
+		}
+	}
+
 	const dbLifetime = time.Minute * 5
 	db.SetConnMaxLifetime(dbLifetime)
 	return nil

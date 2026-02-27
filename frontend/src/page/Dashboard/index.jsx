@@ -1,6 +1,8 @@
 /* eslint-disable no-unused-vars */
 import {
   Box,
+  Button,
+  CircularProgress,
   Divider,
   Grid,
   Paper,
@@ -20,8 +22,13 @@ import API from "../../service";
 import moment from "moment";
 import styled from "@emotion/styled";
 import { capitalizeFirstLetter } from "../../util/String";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const [status, setStatus] = useState("");
+  const [loading, setLoading] = useState(false);
+
   function createData(id, name, created_at, amount, status) {
     return { id, name, created_at, amount, status };
   }
@@ -34,6 +41,8 @@ const Dashboard = () => {
     createData(5, "Shopee", "2026-02-24T11:05:00", 75.25, "success"),
   ];
 
+  const [data, setData] = useState(rows);
+
   const filterData = [
     { value: "", label: "All" },
     { value: "success", label: "Success" },
@@ -41,19 +50,16 @@ const Dashboard = () => {
     { value: "processing", label: "Processing" },
   ];
 
-  const [data, setData] = useState(rows);
-  const [status, setStatus] = useState("");
-
-  const getMenu = async () => {
+  const GetPayment = async () => {
     try {
-      const res = await API.get("menu");
+      const res = await API.get("dashboard/v1/payments");
       setData(res.data?.data);
     } catch (error) {
       // enqueueSnackbar("Failed to get data", { variant: "error" });
     }
   };
   useEffect(() => {
-    getMenu();
+    GetPayment();
   }, []);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -62,6 +68,11 @@ const Dashboard = () => {
       ? data
       : data.filter((row) => row.status === status, [status]),
   );
+
+  const logout = () => {
+    sessionStorage.clear();
+    navigate("/");
+  };
 
   const getSummary = useMemo(
     () => {
@@ -127,7 +138,18 @@ const Dashboard = () => {
   return (
     <Box>
       <Stack gap={8}>
-        <TypographyCom title>List Payment</TypographyCom>
+        <Grid container spacing={2} justifyContent="space-between">
+          <TypographyCom title>List Payment</TypographyCom>
+          <Button
+            variant="contained"
+            color="error"
+            size="small"
+            sx={{ borderRadius: "8px" }}
+            onClick={logout}
+          >
+            Logout
+          </Button>
+        </Grid>
 
         <Grid container spacing={3}>
           <Stack mb={3} direction="row" spacing={2}>
@@ -156,24 +178,32 @@ const Dashboard = () => {
                 </StyledTableRow>
               </TableHead>
               <TableBody>
-                {filteredData.map((row) => (
-                  <TableRow
-                    key={row.name}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <StyledTableCell component="th" scope="row">
-                      {row.id}
-                    </StyledTableCell>
-                    <StyledTableCell>{row.name}</StyledTableCell>
-                    <StyledTableCell>
-                      {moment(row.created_at).format("DD-MM-YYYY, HH:mm")}
-                    </StyledTableCell>
-                    <StyledTableCell>{row.amount}</StyledTableCell>
-                    <StyledTableCell>
-                      {capitalizeFirstLetter(row.status)}
-                    </StyledTableCell>
+                {loading ? (
+                  <TableRow>
+                    <TableCell sx={{ height: 250 }} colSpan={5} align="center">
+                      <CircularProgress size={28} />
+                    </TableCell>
                   </TableRow>
-                ))}
+                ) : (
+                  filteredData.map((row) => (
+                    <TableRow
+                      key={row.name}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    >
+                      <StyledTableCell component="th" scope="row">
+                        {row.id}
+                      </StyledTableCell>
+                      <StyledTableCell>{row.name}</StyledTableCell>
+                      <StyledTableCell>
+                        {moment(row.created_at).format("DD-MM-YYYY, HH:mm")}
+                      </StyledTableCell>
+                      <StyledTableCell>{row.amount}</StyledTableCell>
+                      <StyledTableCell>
+                        {capitalizeFirstLetter(row.status)}
+                      </StyledTableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </TableContainer>

@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/durianpay/fullstack-boilerplate/internal/entity"
@@ -21,25 +22,8 @@ func PaymentsUsecase(repo repository.PaymentRepository, jwtSecret []byte, ttl ti
 	return &Payments{repo: repo, jwtSecret: jwtSecret, ttl: ttl}
 }
 
-// Login verifies email + password and returns a JWT.
-// func (a *Payments) GetPaymentList() (string, *entity.Payment, error) {
-// 	payments, err := a.repo.GetListPayment()
-// 	if err != nil {
-// 		return "", nil, err
-// 	}
-// 	if len(payments) == 0 {
-// 		return "", nil, entity.ErrorNotFound("Data not found")
-// 	}
-
-// 	claims := jwt.MapClaims{
-// 		"sub": payments.ID,
-// 		"exp": time.Now().Add(a.ttl).Unix(),
-// 		"iat": time.Now().Unix(),
-// 	}
-// 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-// 	signed, err := token.SignedString(a.jwtSecret)
-// 	if err != nil {
-// 		return "", nil, entity.WrapError(err, entity.ErrorCodeUnauthorized, "invalid credentials")
-// 	}
-// 	return signed, payments, nil
-// }
+func (a *Payments) GetPaymentList() (string, *entity.Payment, error) {
+	payments, err := a.repo.GetListPayment()
+	fmt.Println(payments)
+	return "", nil, nil
+}
