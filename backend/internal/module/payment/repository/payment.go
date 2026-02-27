@@ -7,7 +7,7 @@ import (
 )
 
 type PaymentRepository interface {
-	GetListPayment() (*entity.Payment, error)
+	GetListPayment() (*[]entity.Payment, error)
 }
 
 type Payment struct {
@@ -18,14 +18,37 @@ func NewPaymenyRepo(db *sql.DB) *Payment {
 	return &Payment{db: db}
 }
 
-func (r *Payment) GetListPayment() (*entity.Payment, error) {
-	row := r.db.QueryRow(`SELECT id, name. amount, created_at, status FROM payments`)
-	var p entity.Payment
-	if err := row.Scan(&p.ID, &p.Name, &p.CreatedAt, &p.Amount, &p.Status); err != nil {
-		if err == sql.ErrNoRows {
-			return nil, entity.ErrorNotFound("Data not found")
-		}
-		return nil, entity.WrapError(err, entity.ErrorCodeInternal, "db error")
+func (r *Payment) GetListPayment() (*[]entity.Payment, error) {
+	rows, err := r.db.Query(`
+	SELECT id, name, amount, created_at, status 
+	FROM payments
+`)
+	if err != nil {
+		return nil, err
 	}
-	return &p, nil
+	defer rows.Close()
+
+	var payments []entity.Payment
+
+	for rows.Next() {
+		var p entity.Payment
+
+		if err := rows.Scan(
+			&p.ID,
+			&p.Name,
+			&p.Amount,
+			&p.CreatedAt,
+			&p.Status,
+		); err != nil {
+			return nil, err
+		}
+
+		payments = append(payments, p)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return &payments, nil
 }

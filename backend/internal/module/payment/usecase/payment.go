@@ -22,8 +22,8 @@ func PaymentsUsecase(repo repository.PaymentRepository, jwtSecret []byte, ttl ti
 	return &Payments{repo: repo, jwtSecret: jwtSecret, ttl: ttl}
 }
 
-func (a *Payments) GetPaymentList() (string, *entity.Payment, error) {
+func (a *Payments) GetPayments() (*[]entity.Payment, error) {
 	payments, _ := a.repo.GetListPayment()
 	fmt.Println(payments)
-	return "", nil, nil
+	return payments, nil
 }
