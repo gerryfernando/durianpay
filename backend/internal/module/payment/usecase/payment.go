@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/durianpay/fullstack-boilerplate/internal/entity"
@@ -9,7 +8,7 @@ import (
 )
 
 type PaymentUsecase interface {
-	GetPayments() (*[]entity.Payment, error)
+	GetPayments(status string) (*[]entity.Payment, error)
 }
 
 type Payments struct {
@@ -22,11 +21,10 @@ func NewPaymentsUsecase(repo repository.PaymentRepository, jwtSecret []byte, ttl
 	return &Payments{repo: repo, jwtSecret: jwtSecret, ttl: ttl}
 }
 
-func (a *Payments) GetPayments() (*[]entity.Payment, error) {
-	payments, err := a.repo.GetListPayment()
+func (a *Payments) GetPayments(status string) (*[]entity.Payment, error) {
+	payments, err := a.repo.GetListPayment(status)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("paymentsUsecase: %v\n", payments)
 	return payments, nil
 }

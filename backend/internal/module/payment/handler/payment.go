@@ -20,8 +20,10 @@ func NewPaymentHandler(paymentUC paymentUsecase.PaymentUsecase) *PaymentHandler 
 	}
 }
 
-func (h *PaymentHandler) GetV1Payments(w http.ResponseWriter, r *http.Request) {
-	payments, err := h.paymentUC.GetPayments()
+func (h *PaymentHandler) GetV1Payments(w http.ResponseWriter, r *http.Request, body openapigen.GetDashboardV1PaymentsParams) {
+	var status = *body.Status
+	payments, err := h.paymentUC.GetPayments(status)
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

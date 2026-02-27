@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 
 	ah "github.com/durianpay/fullstack-boilerplate/internal/module/auth/handler"
@@ -20,5 +21,6 @@ func (h *APIHandler) PostDashboardV1AuthLogin(w http.ResponseWriter, r *http.Req
 }
 
 func (h *APIHandler) GetDashboardV1Payments(w http.ResponseWriter, r *http.Request, body openapigen.GetDashboardV1PaymentsParams) {
-	h.Payments.GetV1Payments(w, r)
+	fmt.Printf("body.Status: %v\n", *body.Status)
+	h.Payments.GetV1Payments(w, r, body)
 }

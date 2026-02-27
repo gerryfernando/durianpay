@@ -27,7 +27,7 @@ import { useNavigate } from "react-router-dom";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [status, setStatus] = useState("all");
-  const [loading, _] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   function createData(id, name, created_at, amount, status) {
     return { id, name, created_at, amount, status };
@@ -52,6 +52,7 @@ const Dashboard = () => {
 
   const GetPayment = async () => {
     try {
+      setLoading(true);
       const token = sessionStorage.getItem("token");
       const res = await API.get("dashboard/v1/payments", {
         params: {
@@ -64,19 +65,14 @@ const Dashboard = () => {
       setData(res.data?.payments);
     } catch (error) {
       enqueueSnackbar("Failed to get data", { variant: "error" });
+    } finally {
+      setLoading(false);
     }
   };
   useEffect(() => {
     GetPayment();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const filteredData = useMemo(() =>
-    status === "all"
-      ? data
-      : data.filter((row) => row.status === status, [status]),
-  );
 
   const logout = () => {
     sessionStorage.clear();
@@ -85,13 +81,11 @@ const Dashboard = () => {
 
   const getSummary = useMemo(
     () => {
-      const failedLength = filteredData.filter(
-        (row) => row.status === "failed",
-      ).length;
-      const successLength = filteredData.filter(
+      const failedLength = data.filter((row) => row.status === "failed").length;
+      const successLength = data.filter(
         (row) => row.status === "success",
       ).length;
-      const processLength = filteredData.filter(
+      const processLength = data.filter(
         (row) => row.status === "processing",
       ).length;
 
@@ -103,7 +97,7 @@ const Dashboard = () => {
     },
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [filteredData],
+    [data],
   );
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -194,7 +188,7 @@ const Dashboard = () => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredData.map((row) => (
+                  data.map((row) => (
                     <TableRow
                       key={row.name}
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -222,7 +216,7 @@ const Dashboard = () => {
             divider={<Divider orientation="vertical" flexItem />}
             spacing={2}
           >
-            <Item>Total : {filteredData.length}</Item>
+            <Item>Total : {data.length}</Item>
             <Item>Success : {getSummary.success} </Item>
             <Item>Failed : {getSummary.failed} </Item>
             <Item>Processing: {getSummary.processing} </Item>
