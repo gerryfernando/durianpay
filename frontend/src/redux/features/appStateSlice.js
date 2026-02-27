@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 //init
 const initialState = {
-  tableNo: 1,
+  token: "",
 };
 
 export const appStateSlice = createSlice({

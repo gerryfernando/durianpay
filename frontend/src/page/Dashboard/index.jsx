@@ -56,13 +56,22 @@ const Dashboard = () => {
     getMenu();
   }, []);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const filteredData = useMemo(() =>
+    status === ""
+      ? data
+      : data.filter((row) => row.status === status, [status]),
+  );
+
   const getSummary = useMemo(
     () => {
-      const failedLength = data.filter((row) => row.status === "failed").length;
-      const successLength = data.filter(
+      const failedLength = filteredData.filter(
+        (row) => row.status === "failed",
+      ).length;
+      const successLength = filteredData.filter(
         (row) => row.status === "success",
       ).length;
-      const processLength = data.filter(
+      const processLength = filteredData.filter(
         (row) => row.status === "processing",
       ).length;
 
@@ -74,7 +83,7 @@ const Dashboard = () => {
     },
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [data],
+    [filteredData],
   );
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -114,12 +123,6 @@ const Dashboard = () => {
     textAlign: "center",
     color: theme.palette.text.secondary,
   }));
-
-  const filteredData = useMemo(() =>
-    status === ""
-      ? data
-      : data.filter((row) => row.status === status, [status]),
-  );
 
   return (
     <Box>
@@ -180,7 +183,7 @@ const Dashboard = () => {
             divider={<Divider orientation="vertical" flexItem />}
             spacing={2}
           >
-            <Item>Total : {data.length}</Item>
+            <Item>Total : {filteredData.length}</Item>
             <Item>Success : {getSummary.success} </Item>
             <Item>Failed : {getSummary.failed} </Item>
             <Item>Processing: {getSummary.processing} </Item>

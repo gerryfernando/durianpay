@@ -102,7 +102,7 @@ func (_ Unimplemented) PostDashboardV1AuthLogin(w http.ResponseWriter, r *http.R
 }
 
 // List of payments
-// (GET /dashboard/v1/payments)
+// (GET /dashboard/v1/payments)PostDashboardV1AuthLogin
 func (_ Unimplemented) GetDashboardV1Payments(w http.ResponseWriter, r *http.Request, params GetDashboardV1PaymentsParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
