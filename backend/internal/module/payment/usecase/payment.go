@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/durianpay/fullstack-boilerplate/internal/entity"
-	"github.com/durianpay/fullstack-boilerplate/internal/module/auth/repository"
+	"github.com/durianpay/fullstack-boilerplate/internal/module/payment/repository"
 )
 
 type PaymentUsecase interface {
@@ -23,7 +23,7 @@ func PaymentsUsecase(repo repository.PaymentRepository, jwtSecret []byte, ttl ti
 }
 
 func (a *Payments) GetPaymentList() (string, *entity.Payment, error) {
-	payments, err := a.repo.GetListPayment()
+	payments, _ := a.repo.GetListPayment()
 	fmt.Println(payments)
 	return "", nil, nil
 }
