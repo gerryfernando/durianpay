@@ -200,7 +200,7 @@ const Dashboard = () => {
                       </StyledTableCell>
                       <StyledTableCell>{row.merchant}</StyledTableCell>
                       <StyledTableCell>
-                        {moment(row.created_at).format("DD-MM-YYYY, HH:mm")}
+                        {moment(row.created_at).format("DD MMM YYYY, HH:mm")}
                       </StyledTableCell>
                       <StyledTableCell>{row.amount}</StyledTableCell>
                       <StyledTableCell>
