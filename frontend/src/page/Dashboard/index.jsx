@@ -52,10 +52,15 @@ const Dashboard = () => {
 
   const GetPayment = async () => {
     try {
-      const res = await API.get("dashboard/v1/payments");
-      setData(res.data?.data);
+      const token = sessionStorage.getItem("token");
+      const res = await API.get("dashboard/v1/payments", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setData(res.data?.payments);
     } catch (error) {
-      // enqueueSnackbar("Failed to get data", { variant: "error" });
+      enqueueSnackbar("Failed to get data", { variant: "error" });
     }
   };
   useEffect(() => {
@@ -193,7 +198,7 @@ const Dashboard = () => {
                       <StyledTableCell component="th" scope="row">
                         {row.id}
                       </StyledTableCell>
-                      <StyledTableCell>{row.name}</StyledTableCell>
+                      <StyledTableCell>{row.merchant}</StyledTableCell>
                       <StyledTableCell>
                         {moment(row.created_at).format("DD-MM-YYYY, HH:mm")}
                       </StyledTableCell>
